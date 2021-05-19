@@ -1,85 +1,95 @@
-import java.util.Iterator;
+import java.util.Arrays;
 
 public class MyList<E> {
     private int size = 0;
-    private static final int DEFAULT_CAPACITY = 10;
-    private Object[] elements;
+    private static final int DEFAULT_CAPACITY = 8;
+    private E[] elements;
 
     public MyList() {
+        elements = (E[]) new Object[DEFAULT_CAPACITY];
     }
 
     public MyList(int capacity) {
-        elements = new Object[DEFAULT_CAPACITY];
+        elements = (E[]) new Object[capacity];
         this.size = capacity;
     }
 
-    public void add(int index, E e) {
-        ensureCapacity();
-        for (int i = size - 1; i >= index; i--) {
-            elements[i + 1] = elements[i];
-        }
-        elements[index] = e;
-        this.size++;
-    }
-
-    private void ensureCapacity() {
-        if (size >= elements.length) {
-            E[] newElements = (E[]) (new Object[this.size * 2 + 1]);
-            for (int i = 0; i < elements.length; i++) {
-                newElements[i] = (E) (elements[i]);
+    private void ensureCapa() {
+        if (size > elements.length) {
+            E[] newArray = (E[]) (new Object[size*2+1]);
+            for (int i = 0;i< elements.length;i++){
+                newArray[i] = elements[i];
             }
-            elements = newElements;
+            elements = newArray;
         }
     }
 
-    private void checkIndex(int index) {
-        if (index < 0 || index >= this.size) {
-            throw new IndexOutOfBoundsException("index " + index + " out of bounds");
-        }
+    public void add(E e) {
+        size += 1;
+        ensureCapa();
+        elements[size - 1] = e;
     }
 
-    public E remove(int index) {
-        checkIndex(index);
-        E element = (E) elements[index];
-        for (int i = index; i < this.size - 1; i++) {
-            elements[index] = elements[index + 1];
-        }
-        this.size--;
-        return element;
-    }
-
-    public int size() {
-        return this.size;
-    }
-
-    @Override
-    public E clone() {
-        return (E) elements;
-    }
-
-    public boolean contains(E o) {
-        for (int i = 0; i < this.size; i++) {
-            if (o.equals(elements[i])) {
-                return true;
+    public boolean add(E e, int index) {
+        if (index >= 0 && index <= size) {
+            size ++;
+            ensureCapa();
+            for (int i = size - 2; i >= index; i--) {
+                elements[i + 1] = elements[i];
             }
+            elements[index] = e;
+            return true;
         }
         return false;
     }
 
-    public int indexOf(E o) {
-        for (int i = 0; i < this.size; i++) {
-            if (o.equals(elements[i])) {
+    public E get(int index) {
+        if (index >= 0 && index < size) {
+            return elements[index];
+        }
+        return null;
+    }
+
+    public E[] getElements() {
+        return this.elements;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public E remove(int index) {
+        E result = null;
+        if (index >= 0 && index < size) {
+            result = elements[index];
+            for (int i = index; i < size; i++) {
+                elements[i] = elements[i + 1];
+            }
+            size --;
+        }
+        return result;
+    }
+
+    public void clear() {
+        elements = (E[]) new Object[DEFAULT_CAPACITY];
+        size = 0;
+    }
+
+    public int indexOf(E e) {
+        for (int i = 0; i < size; i++) {
+            if (elements[i].equals(e)) {
                 return i;
             }
         }
         return -1;
     }
 
-    public boolean add(E e) {
-        ensureCapacity();
-        elements[size()] = e;
-        return true;
+    public boolean contains(E e) {
+        for (E x : elements) {
+            if (e.equals(x)) {
+                return true;
+            }
+        }
+        return false;
     }
-
-
 }
